@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>User Management</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul>
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+    <h2>Create User</h2>
+    <form action="{{ url_for('create_user') }}" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <label for="active">Active:</label>
+        <input type="checkbox" id="active" name="active">
+        <br>
+        <button type="submit">Create</button>
+    </form>
+
+    <h2>Users</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user[0] }}</td>
+            <td>{{ user[1] }}</td>
+            <td>{{ user[2] }}</td>
+            <td>{{ 'Yes' if user[3] else 'No' }}</td>
+            <td>
+                <form action="{{ url_for('update_user') }}" method="post" style="display:inline;">
+                    <input type="hidden" name="id" value="{{ user[0] }}">
+                    <input type="text" name="username" value="{{ user[1] }}" required>
+                    <input type="password" name="password" value="{{ user[2] }}" required>
+                    <input type="checkbox" name="active" {% if user[3] %}checked{% endif %}>
+                    <button type="submit">Update</button>
+                </form>
+                <a href="{{ url_for('delete_user', user_id=user[0]) }}" onclick="return confirm('Are you sure?');">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
